@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+*.tgz
+D:bitemarkettemp_bite/
+Dbitemarkettemp_bite/
+bitemarketnpm_bite.json
+nul
+.claude/

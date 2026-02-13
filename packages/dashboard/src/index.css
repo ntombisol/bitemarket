@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@theme {
+  /* Core palette - deep surveillance terminal */
+  --color-void: #06080d;
+  --color-abyss: #0a0e17;
+  --color-slate-deep: #111827;
+  --color-slate-mid: #1e293b;
+  --color-slate-light: #334155;
+
+  /* Signal colors */
+  --color-cipher: #f97316;
+  --color-cipher-glow: #fb923c;
+  --color-decrypt: #22d3ee;
+  --color-decrypt-glow: #67e8f9;
+  --color-secure: #10b981;
+  --color-secure-glow: #34d399;
+  --color-payment: #a78bfa;
+  --color-payment-glow: #c4b5fd;
+  --color-danger: #ef4444;
+  --color-muted: #64748b;
+
+  /* Typography */
+  --font-display: "IBM Plex Mono", "JetBrains Mono", monospace;
+  --font-body: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", "Fira Code", monospace;
+}
+
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap");
+
+body {
+  background: var(--color-void);
+  color: #e2e8f0;
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+/* Noise texture overlay */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-slate-light); border-radius: 2px; }
+
+/* Glow utility classes */
+@utility glow-cipher {
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.15), 0 0 4px rgba(249, 115, 22, 0.3);
+}
+@utility glow-decrypt {
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.15), 0 0 4px rgba(34, 211, 238, 0.3);
+}
+@utility glow-secure {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.15), 0 0 4px rgba(16, 185, 129, 0.3);
+}
+@utility glow-payment {
+  box-shadow: 0 0 20px rgba(167, 139, 250, 0.15), 0 0 4px rgba(167, 139, 250, 0.3);
+}
+
+@keyframes scan-line {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+@keyframes data-flow {
+  0% { transform: translateX(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+@keyframes cipher-scramble {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}

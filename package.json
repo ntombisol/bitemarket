@@ -1,0 +1,18 @@
+{
+  "name": "bite-market",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Encrypted data marketplace for AI agents — BITE threshold encryption + x402 micropayments",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=packages/api",
+    "dashboard": "npm run dev --workspace=packages/dashboard",
+    "demo": "npx tsx demo/run-demo.ts",
+    "build": "npm run build --workspaces"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

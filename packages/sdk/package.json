@@ -1,0 +1,22 @@
+{
+  "name": "@bite-market/sdk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@ethereumjs/rlp": "^10.0.0",
+    "@skalenetwork/bite": "^0.7.1",
+    "@x402/core": "^2.3.0",
+    "@x402/evm": "^2.3.0",
+    "@x402/fetch": "^2.3.0",
+    "viem": "^2.23.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

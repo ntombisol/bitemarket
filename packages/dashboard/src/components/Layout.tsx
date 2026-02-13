@@ -1,4 +1,4 @@
-import { Shield, Wifi, WifiOff } from "lucide-react";
+import { Shield, Wifi, WifiOff, BookOpen } from "lucide-react";
 import type { ReactNode } from "react";
 import { WalletButton } from "./WalletButton";
 import { FaucetButton } from "./FaucetButton";
@@ -6,9 +6,11 @@ import { FaucetButton } from "./FaucetButton";
 interface LayoutProps {
   children: ReactNode;
   isConnected: boolean;
+  onShowDocs?: () => void;
+  showingDocs?: boolean;
 }
 
-export function Layout({ children, isConnected }: LayoutProps) {
+export function Layout({ children, isConnected, onShowDocs, showingDocs }: LayoutProps) {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Top bar */}
@@ -41,6 +43,19 @@ export function Layout({ children, isConnected }: LayoutProps) {
                 BITE V2 Threshold
               </span>
             </div>
+            {onShowDocs && (
+              <button
+                onClick={onShowDocs}
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded border text-[10px] font-[family-name:var(--font-mono)] uppercase tracking-wider transition-all ${
+                  showingDocs
+                    ? "border-decrypt/50 bg-decrypt/20 text-decrypt"
+                    : "border-slate-light/20 bg-slate-deep text-muted hover:border-decrypt/30 hover:text-decrypt"
+                }`}
+              >
+                <BookOpen className="w-3 h-3" />
+                API Docs
+              </button>
+            )}
             <FaucetButton />
             <WalletButton />
             <div className="flex items-center gap-1.5">

@@ -1,11 +1,20 @@
+export interface ParamField {
+  type: "string" | "string[]" | "number";
+  required?: boolean;
+  default?: unknown;
+  options?: string[];
+  description?: string;
+}
+
 export interface SellerListing {
   id: string;
   name: string;
   description: string;
   category: "weather" | "crypto" | "signals" | "custom";
   priceUsd: string; // e.g. "$0.001"
+  params: Record<string, ParamField>;
   sampleResponse: unknown;
-  handler: (query: string) => Promise<unknown>;
+  handler: (params: Record<string, unknown>) => Promise<unknown>;
 }
 
 /** Serializable seller info (no handler function) */
@@ -15,6 +24,7 @@ export interface SellerInfo {
   description: string;
   category: string;
   priceUsd: string;
+  params: Record<string, ParamField>;
   sampleResponse: unknown;
 }
 

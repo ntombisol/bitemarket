@@ -8,7 +8,53 @@ import {
   textToHex,
 } from "../services/crypto.js";
 import { config } from "../config.js";
-import type { EncryptedResponse, QueryRequest } from "../types.js";
+import type { EncryptedResponse, QueryRequest, SellerListing } from "../types.js";
+
+/**
+ * Extract structured params from free-text query using the seller's param schema.
+ * Scans query text for option matches, falls back to defaults.
+ */
+function extractParams(
+  seller: SellerListing,
+  query: string,
+): Record<string, unknown> {
+  const params: Record<string, unknown> = {};
+  const q = query.toLowerCase();
+
+  for (const [key, field] of Object.entries(seller.params)) {
+    if (field.options && field.options.length > 0) {
+      if (field.type === "string[]") {
+        const matched = field.options.filter((opt) =>
+          q.includes(opt.toLowerCase()),
+        );
+        if (matched.length > 0) {
+          params[key] = matched;
+        } else if (q.includes("all")) {
+          params[key] = [...field.options];
+        } else if (field.default !== undefined) {
+          params[key] = field.default;
+        } else {
+          params[key] = [...field.options];
+        }
+      } else {
+        const matched = field.options.find((opt) =>
+          q.includes(opt.toLowerCase()),
+        );
+        if (matched) {
+          params[key] = matched;
+        } else if (field.default !== undefined) {
+          params[key] = field.default;
+        } else {
+          params[key] = field.options[0];
+        }
+      }
+    } else if (field.default !== undefined) {
+      params[key] = field.default;
+    }
+  }
+
+  return params;
+}
 
 // x402 client for server-side payment (used by /query/demo)
 import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
@@ -94,7 +140,15 @@ queryRouter.post("/", async (req, res) => {
       sellerName: seller.name,
     });
 
-    const responseData = await seller.handler(plaintext);
+    // Try to parse decrypted text as JSON params; fall back to text extraction
+    let handlerParams: Record<string, unknown>;
+    try {
+      handlerParams = JSON.parse(plaintext);
+    } catch {
+      handlerParams = extractParams(seller, plaintext);
+    }
+
+    const responseData = await seller.handler(handlerParams);
     const responseJson = JSON.stringify(responseData);
 
     // 4. Encrypt the response
@@ -143,13 +197,14 @@ queryRouter.post("/", async (req, res) => {
  */
 queryRouter.post("/demo", async (req, res) => {
   try {
-    const { sellerId, query } = req.body as {
+    const { sellerId, query, params } = req.body as {
       sellerId: string;
-      query: string;
+      query?: string;
+      params?: Record<string, unknown>;
     };
 
-    if (!sellerId || !query) {
-      res.status(400).json({ error: "sellerId and query required" });
+    if (!sellerId || (!query && !params)) {
+      res.status(400).json({ error: "sellerId and (query or params) required" });
       return;
     }
 
@@ -159,14 +214,18 @@ queryRouter.post("/demo", async (req, res) => {
       return;
     }
 
+    // Resolve handler params: explicit params take priority, else extract from query text
+    const handlerParams = params || extractParams(seller, query || "");
+    const queryText = query || JSON.stringify(handlerParams);
+
     // Encrypt the query to show the BITE flow
-    const encryptedQuery = await biteEncrypt(query);
+    const encryptedQuery = await biteEncrypt(queryText);
 
     eventBus.emit("query_received", {
       sellerId,
       buyerAddress: "dashboard-demo",
       encryptedQuery: encryptedQuery.substring(0, 80) + "...",
-      plaintextQuery: query,
+      plaintextQuery: queryText,
       encryptedLength: encryptedQuery.length,
     });
 
@@ -185,7 +244,7 @@ queryRouter.post("/demo", async (req, res) => {
       sellerName: seller.name,
     });
 
-    const responseData = await seller.handler(decrypted);
+    const responseData = await seller.handler(handlerParams);
     const responseJson = JSON.stringify(responseData);
 
     // Encrypt response
@@ -327,14 +386,15 @@ queryRouter.post("/demo", async (req, res) => {
  */
 queryRouter.post("/prepare", async (req, res) => {
   try {
-    const { sellerId, query, buyerAddress } = req.body as {
+    const { sellerId, query, params, buyerAddress } = req.body as {
       sellerId: string;
-      query: string;
+      query?: string;
+      params?: Record<string, unknown>;
       buyerAddress?: string;
     };
 
-    if (!sellerId || !query) {
-      res.status(400).json({ error: "sellerId and query required" });
+    if (!sellerId || (!query && !params)) {
+      res.status(400).json({ error: "sellerId and (query or params) required" });
       return;
     }
 
@@ -344,14 +404,18 @@ queryRouter.post("/prepare", async (req, res) => {
       return;
     }
 
+    // Resolve handler params: explicit params take priority, else extract from query text
+    const handlerParams = params || extractParams(seller, query || "");
+    const queryText = query || JSON.stringify(handlerParams);
+
     // Encrypt the query (for SSE visualization)
-    const encryptedQuery = await biteEncrypt(query);
+    const encryptedQuery = await biteEncrypt(queryText);
 
     eventBus.emit("query_received", {
       sellerId,
       buyerAddress: buyerAddress || "wallet-user",
       encryptedQuery: encryptedQuery.substring(0, 80) + "...",
-      plaintextQuery: query,
+      plaintextQuery: queryText,
       encryptedLength: encryptedQuery.length,
     });
 
@@ -371,7 +435,7 @@ queryRouter.post("/prepare", async (req, res) => {
       sellerName: seller.name,
     });
 
-    const responseData = await seller.handler(decrypted);
+    const responseData = await seller.handler(handlerParams);
     const responseJson = JSON.stringify(responseData);
 
     // Encrypt response

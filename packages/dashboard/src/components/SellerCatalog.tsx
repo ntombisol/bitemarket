@@ -109,6 +109,24 @@ export function SellerCatalog({ sellers, selectedId, onSelect, loading }: Seller
                   <p className="text-[11px] text-muted leading-relaxed truncate">
                     {seller.description}
                   </p>
+                  {seller.params && Object.keys(seller.params).length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-1.5">
+                      {Object.entries(seller.params).map(([key, field]) => (
+                        <span
+                          key={key}
+                          className="text-[9px] font-[family-name:var(--font-mono)] px-1.5 py-0.5 rounded border border-slate-light/15 text-muted"
+                          title={field.description}
+                        >
+                          {key}{field.required ? "" : " (optional)"}
+                          {field.options
+                            ? field.options.length <= 3
+                              ? `: ${field.options.join(", ")}`
+                              : `: ${field.options.slice(0, 2).join(", ")} +${field.options.length - 2}`
+                            : ""}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.button>

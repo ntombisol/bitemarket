@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Loader2, Lock, Unlock, CheckCircle, AlertCircle, ExternalLink, Wallet } from "lucide-react";
-import type { SellerInfo } from "../hooks/useRegistry";
+import { Send, Loader2, Lock, Unlock, CheckCircle, AlertCircle, ExternalLink, Wallet, Type } from "lucide-react";
+import type { SellerInfo, ParamField } from "../hooks/useRegistry";
 import { usePayingFetch } from "../hooks/usePayingFetch";
 
 const BASE_SEPOLIA_EXPLORER = "https://sepolia.basescan.org";
@@ -45,6 +45,8 @@ const STATE_LABELS: Record<QueryState, string> = {
 
 export function QueryPanel({ sellers, selectedSellerId, onSelectSeller }: QueryPanelProps) {
   const [query, setQuery] = useState("");
+  const [paramValues, setParamValues] = useState<Record<string, unknown>>({});
+  const [useFreeText, setUseFreeText] = useState(false);
   const [state, setState] = useState<QueryState>("idle");
   const [result, setResult] = useState<QueryResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -54,7 +56,32 @@ export function QueryPanel({ sellers, selectedSellerId, onSelectSeller }: QueryP
   const useWallet = isConnected && walletReady;
 
   const selectedSeller = sellers.find((s) => s.id === selectedSellerId);
+  const hasParams = selectedSeller && Object.keys(selectedSeller.params || {}).length > 0;
   const isLoading = !["idle", "done", "error"].includes(state);
+
+  // Reset param values when seller changes
+  useEffect(() => {
+    if (!selectedSeller?.params) { setParamValues({}); return; }
+    const defaults: Record<string, unknown> = {};
+    for (const [key, field] of Object.entries(selectedSeller.params)) {
+      if (field.default !== undefined) defaults[key] = field.default;
+      else if (field.type === "string[]" && field.options) defaults[key] = [field.options[0]];
+      else if (field.options) defaults[key] = field.options[0];
+      else defaults[key] = "";
+    }
+    setParamValues(defaults);
+  }, [selectedSellerId]);
+
+  /** Build request body with either params or query */
+  function buildRequestBody() {
+    const body: Record<string, unknown> = { sellerId: selectedSellerId };
+    if (!useFreeText && hasParams) {
+      body.params = paramValues;
+    } else {
+      body.query = query.trim();
+    }
+    return body;
+  }
 
   /** Server-side demo flow (no wallet needed) */
   async function handleDemoFlow() {
@@ -65,7 +92,7 @@ export function QueryPanel({ sellers, selectedSellerId, onSelectSeller }: QueryP
     const res = await fetch("/query/demo", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sellerId: selectedSellerId, query: query.trim() }),
+      body: JSON.stringify(buildRequestBody()),
     });
 
     const data = await res.json().catch(() => ({}));
@@ -110,8 +137,7 @@ export function QueryPanel({ sellers, selectedSellerId, onSelectSeller }: QueryP
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        sellerId: selectedSellerId,
-        query: query.trim(),
+        ...buildRequestBody(),
         buyerAddress: address,
       }),
     });
@@ -182,9 +208,13 @@ export function QueryPanel({ sellers, selectedSellerId, onSelectSeller }: QueryP
     setState("done");
   }
 
+  const canSubmit = selectedSellerId && !isLoading && (
+    useFreeText || !hasParams ? query.trim().length > 0 : true
+  );
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!selectedSellerId || !query.trim() || isLoading) return;
+    if (!canSubmit) return;
 
     setError(null);
     setResult(null);
@@ -272,30 +302,76 @@ export function QueryPanel({ sellers, selectedSellerId, onSelectSeller }: QueryP
           </select>
         </div>
 
-        {/* Query input */}
-        <div>
-          <label className="text-[10px] font-[family-name:var(--font-mono)] text-muted uppercase tracking-wider block mb-1.5">
-            Query (will be encrypted)
-          </label>
-          <textarea
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            disabled={isLoading}
-            placeholder={
-              selectedSeller
-                ? `Ask ${selectedSeller.name} something...`
-                : "Select a seller first..."
-            }
-            rows={2}
-            className="w-full bg-slate-deep border border-slate-light/20 rounded px-3 py-2 text-sm text-slate-300 font-[family-name:var(--font-mono)] placeholder:text-muted/30 focus:outline-none focus:border-decrypt/40 transition-colors resize-none disabled:opacity-40"
-          />
-        </div>
+        {/* Param inputs or free-text query */}
+        {hasParams && !useFreeText ? (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] font-[family-name:var(--font-mono)] text-muted uppercase tracking-wider">
+                Parameters
+              </label>
+              <button
+                type="button"
+                onClick={() => setUseFreeText(true)}
+                className="text-[10px] font-[family-name:var(--font-mono)] px-2 py-0.5 rounded border border-slate-light/20 text-muted hover:text-decrypt hover:border-decrypt/40 transition-colors flex items-center gap-1"
+              >
+                <Type className="w-3 h-3" /> Switch to free text
+              </button>
+            </div>
+            <p className="text-[10px] text-muted/70 leading-relaxed">
+              Choose what data you want from <span className="text-slate-300">{selectedSeller!.name}</span>. Your selections are encrypted before sending.
+            </p>
+            {Object.entries(selectedSeller!.params).map(([key, field]) => (
+              <ParamInput
+                key={key}
+                name={key}
+                field={field}
+                value={paramValues[key]}
+                onChange={(v) => setParamValues((prev) => ({ ...prev, [key]: v }))}
+                disabled={isLoading}
+              />
+            ))}
+          </div>
+        ) : (
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-[10px] font-[family-name:var(--font-mono)] text-muted uppercase tracking-wider">
+                Query (will be encrypted)
+              </label>
+              {hasParams && (
+                <button
+                  type="button"
+                  onClick={() => setUseFreeText(false)}
+                  className="text-[10px] font-[family-name:var(--font-mono)] px-2 py-0.5 rounded border border-slate-light/20 text-muted hover:text-decrypt hover:border-decrypt/40 transition-colors flex items-center gap-1"
+                >
+                  Switch to structured params
+                </button>
+              )}
+            </div>
+            {hasParams && (
+              <p className="text-[10px] text-muted/70 mb-1.5 leading-relaxed">
+                Type naturally — keywords like city names or token symbols will be detected automatically.
+              </p>
+            )}
+            <textarea
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              disabled={isLoading}
+              placeholder={
+                selectedSeller
+                  ? `Ask ${selectedSeller.name} something...`
+                  : "Select a seller first..."
+              }
+              rows={2}
+              className="w-full bg-slate-deep border border-slate-light/20 rounded px-3 py-2 text-sm text-slate-300 font-[family-name:var(--font-mono)] placeholder:text-muted/30 focus:outline-none focus:border-decrypt/40 transition-colors resize-none disabled:opacity-40"
+            />
+          </div>
+        )}
 
         {/* Submit */}
         <div className="flex gap-2">
           <button
             type="submit"
-            disabled={!selectedSellerId || !query.trim() || isLoading}
+            disabled={!canSubmit}
             className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded font-[family-name:var(--font-mono)] text-xs uppercase tracking-wider transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed ${
               useWallet
                 ? "bg-payment/20 border border-payment/40 text-payment hover:bg-payment/30 hover:border-payment/60"
@@ -503,6 +579,120 @@ function TransactionLinks({ txs, priceUsd }: { txs: TxInfo; priceUsd: string }) 
           </a>
         ))}
       </div>
+    </div>
+  );
+}
+
+function ParamInput({
+  name,
+  field,
+  value,
+  onChange,
+  disabled,
+}: {
+  name: string;
+  field: ParamField;
+  value: unknown;
+  onChange: (v: unknown) => void;
+  disabled: boolean;
+}) {
+  const inputCls =
+    "w-full bg-slate-deep border border-slate-light/20 rounded px-3 py-1.5 text-sm text-slate-300 font-[family-name:var(--font-mono)] focus:outline-none focus:border-decrypt/40 transition-colors disabled:opacity-40";
+
+  if (field.type === "string[]" && field.options) {
+    const selected = Array.isArray(value) ? (value as string[]) : [];
+    return (
+      <div>
+        <label className="text-[10px] font-[family-name:var(--font-mono)] text-muted uppercase tracking-wider block mb-1">
+          {name} {field.required && <span className="text-danger">*</span>}
+          {field.description && <span className="normal-case text-muted/60 ml-1">— {field.description}</span>}
+        </label>
+        <div className="flex flex-wrap gap-1.5">
+          {field.options.map((opt) => {
+            const active = selected.includes(opt);
+            return (
+              <button
+                key={opt}
+                type="button"
+                disabled={disabled}
+                onClick={() =>
+                  onChange(
+                    active
+                      ? selected.filter((s) => s !== opt)
+                      : [...selected, opt],
+                  )
+                }
+                className={`px-2.5 py-1 rounded text-xs font-[family-name:var(--font-mono)] border transition-all disabled:opacity-40 ${
+                  active
+                    ? "border-decrypt/60 bg-decrypt/15 text-decrypt"
+                    : "border-slate-light/20 bg-slate-deep text-muted hover:border-slate-light/40"
+                }`}
+              >
+                {opt}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  if (field.options) {
+    return (
+      <div>
+        <label className="text-[10px] font-[family-name:var(--font-mono)] text-muted uppercase tracking-wider block mb-1">
+          {name} {field.required && <span className="text-danger">*</span>}
+          {field.description && <span className="normal-case text-muted/60 ml-1">— {field.description}</span>}
+        </label>
+        <select
+          value={(value as string) || ""}
+          onChange={(e) => onChange(e.target.value)}
+          disabled={disabled}
+          className={inputCls}
+        >
+          {!field.required && <option value="">—</option>}
+          {field.options.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  }
+
+  if (field.type === "number") {
+    return (
+      <div>
+        <label className="text-[10px] font-[family-name:var(--font-mono)] text-muted uppercase tracking-wider block mb-1">
+          {name} {field.required && <span className="text-danger">*</span>}
+          {field.description && <span className="normal-case text-muted/60 ml-1">— {field.description}</span>}
+        </label>
+        <input
+          type="number"
+          value={(value as number) ?? ""}
+          onChange={(e) => onChange(e.target.value ? Number(e.target.value) : undefined)}
+          disabled={disabled}
+          className={inputCls}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <label className="text-[10px] font-[family-name:var(--font-mono)] text-muted uppercase tracking-wider block mb-1">
+        {name} {field.required && <span className="text-danger">*</span>}
+        {field.description && <span className="normal-case text-muted/60 ml-1">— {field.description}</span>}
+      </label>
+      <input
+        type="text"
+        value={(value as string) || ""}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
+        placeholder={field.default ? String(field.default) : ""}
+        className={inputCls}
+      />
     </div>
   );
 }

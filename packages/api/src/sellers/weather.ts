@@ -7,6 +7,14 @@ export const weatherSeller: SellerListing = {
     "Real-time weather data and forecasts for any city. Includes temperature, humidity, wind, and 7-day forecast.",
   category: "weather",
   priceUsd: "$0.001",
+  params: {
+    city: {
+      type: "string",
+      required: true,
+      options: ["San Francisco", "New York", "Tokyo", "London"],
+      description: "City name for weather data",
+    },
+  },
   sampleResponse: {
     city: "San Francisco",
     temperature: 62,
@@ -15,17 +23,8 @@ export const weatherSeller: SellerListing = {
     wind: "12 mph NW",
     forecast: "Clear skies expected through Thursday",
   },
-  async handler(query: string) {
-    const q = query.toLowerCase();
-    const city = q.includes("sf") || q.includes("san francisco")
-      ? "San Francisco"
-      : q.includes("ny") || q.includes("new york")
-        ? "New York"
-        : q.includes("tokyo")
-          ? "Tokyo"
-          : q.includes("london")
-            ? "London"
-            : "San Francisco";
+  async handler(params: Record<string, unknown>) {
+    const city = (params.city as string) || "San Francisco";
 
     const temps: Record<string, number> = {
       "San Francisco": 58 + Math.random() * 15,
@@ -36,7 +35,7 @@ export const weatherSeller: SellerListing = {
 
     return {
       city,
-      temperature: Math.round(temps[city] * 10) / 10,
+      temperature: Math.round((temps[city] ?? 50 + Math.random() * 15) * 10) / 10,
       unit: "°F",
       conditions: ["Sunny", "Partly cloudy", "Overcast", "Light rain"][
         Math.floor(Math.random() * 4)

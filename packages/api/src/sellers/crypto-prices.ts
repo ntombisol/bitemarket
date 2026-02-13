@@ -7,15 +7,26 @@ export const cryptoPricesSeller: SellerListing = {
     "Real-time cryptocurrency prices with 24h change, volume, and market cap. Supports BTC, ETH, SOL, and more.",
   category: "crypto",
   priceUsd: "$0.001",
+  params: {
+    tokens: {
+      type: "string[]",
+      required: true,
+      options: ["BTC", "ETH", "SOL", "AVAX", "LINK", "DOT"],
+      description: "Token symbols to get prices for",
+    },
+    currency: {
+      type: "string",
+      default: "USD",
+      description: "Quote currency",
+    },
+  },
   sampleResponse: {
     BTC: { price: 97542.12, change24h: 2.3, volume24h: "32.1B" },
     ETH: { price: 3421.56, change24h: -1.1, volume24h: "15.7B" },
     SOL: { price: 178.34, change24h: 5.7, volume24h: "4.2B" },
   },
-  async handler(query: string) {
-    const q = query.toLowerCase();
-
-    const prices: Record<
+  async handler(params: Record<string, unknown>) {
+    const allPrices: Record<
       string,
       { base: number; volatility: number; mcap: string }
     > = {
@@ -27,15 +38,15 @@ export const cryptoPricesSeller: SellerListing = {
       DOT: { base: 7.5, volatility: 0.8, mcap: "10B" },
     };
 
-    // Filter to requested tokens or return all
-    const requested = Object.keys(prices).filter(
-      (token) => q.includes(token.toLowerCase()) || q.includes("all"),
-    );
-    const tokens = requested.length > 0 ? requested : Object.keys(prices);
+    const requestedTokens = Array.isArray(params.tokens) ? params.tokens as string[] : Object.keys(allPrices);
+    const tokens = requestedTokens.filter((t) => t in allPrices);
+    if (tokens.length === 0) tokens.push(...Object.keys(allPrices));
+
+    const currency = (params.currency as string) || "USD";
 
     const result: Record<string, unknown> = {};
     for (const token of tokens) {
-      const p = prices[token];
+      const p = allPrices[token];
       const change = (Math.random() - 0.5) * 10;
       result[token] = {
         price: Math.round((p.base + (Math.random() - 0.5) * p.volatility) * 100) / 100,
@@ -47,6 +58,7 @@ export const cryptoPricesSeller: SellerListing = {
 
     return {
       tokens: result,
+      currency,
       timestamp: new Date().toISOString(),
       source: "BITE Market Crypto Feed",
     };

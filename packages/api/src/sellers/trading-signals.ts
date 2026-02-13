@@ -56,7 +56,7 @@ export const tradingSignalsSeller: SellerListing = {
         `Key ${signal === "BUY" ? "support" : "resistance"} level at ${Math.round(entry * (1 - multiplier * 0.03))}`,
       ],
       generatedAt: new Date().toISOString(),
-      source: "BITE Market Alpha Signals",
+      source: "Ciphermarket Alpha Signals",
     };
   },
 };

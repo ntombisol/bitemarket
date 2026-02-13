@@ -60,7 +60,7 @@ export const cryptoPricesSeller: SellerListing = {
       tokens: result,
       currency,
       timestamp: new Date().toISOString(),
-      source: "BITE Market Crypto Feed",
+      source: "Ciphermarket Crypto Feed",
     };
   },
 };

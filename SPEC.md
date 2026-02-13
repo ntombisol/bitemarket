@@ -1,4 +1,4 @@
-# BITE Market — Encrypted Data Marketplace for AI Agents
+# Ciphermarket — Encrypted Data Marketplace
 
 > Private data selling with threshold encryption + x402 micropayments
 
@@ -23,7 +23,7 @@ For sensitive data (trading signals, research, alpha), this is a dealbreaker.
 
 ## 💡 Solution
 
-**BITE Market** — an encrypted data vending machine for AI agents.
+**Ciphermarket** — an encrypted data vending machine for AI agents.
 
 ```
 ┌─────────────┐     BITE encrypted query     ┌─────────────┐
@@ -73,7 +73,7 @@ For sensitive data (trading signals, research, alpha), this is a dealbreaker.
 
 ```
 ┌────────────────────────────────────────────────────────────┐
-│                      BITE Market API                        │
+│                      Ciphermarket API                        │
 ├────────────────────────────────────────────────────────────┤
 │                                                            │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
@@ -138,7 +138,7 @@ For sensitive data (trading signals, research, alpha), this is a dealbreaker.
 **"Private Alpha Purchase"**
 
 1. Trading agent wants to buy signal data
-2. Agent queries BITE Market: "Give me SOL price predictions"
+2. Agent queries Ciphermarket: "Give me SOL price predictions"
 3. Query is BITE-encrypted — seller can't see exact request until processed
 4. Seller returns encrypted response
 5. Agent pays 0.01 USDC via x402
@@ -208,7 +208,7 @@ For sensitive data (trading signals, research, alpha), this is a dealbreaker.
 ## 📁 Project Structure
 
 ```
-bite-market/
+ciphermarket/
 ├── SPEC.md              # This file
 ├── README.md            # Setup & usage
 ├── packages/

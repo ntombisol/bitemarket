@@ -5,7 +5,7 @@ async function main() {
   const app = await createApp();
 
   app.listen(config.PORT, () => {
-    console.log(`\n  BITE Market API running on http://localhost:${config.PORT}`);
+    console.log(`\n  Ciphermarket API running on http://localhost:${config.PORT}`);
     console.log(`  Registry:  GET  http://localhost:${config.PORT}/registry`);
     console.log(`  Query:     POST http://localhost:${config.PORT}/query`);
     console.log(`  Demo:      POST http://localhost:${config.PORT}/query/demo`);

@@ -49,7 +49,7 @@ export const weatherSeller: SellerListing = {
         "Fog expected in the morning",
       ][Math.floor(Math.random() * 4)],
       generatedAt: new Date().toISOString(),
-      source: "BITE Market Weather Intelligence",
+      source: "Ciphermarket Weather Intelligence",
     };
   },
 };

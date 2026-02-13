@@ -91,10 +91,10 @@ export function FlowVisualization({ events, latestEvent }: FlowVisualizationProp
             <ArrowRight className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 text-muted" />
           </div>
 
-          {/* BITE Market */}
+          {/* Ciphermarket */}
           <ActorNode
             icon={ShieldCheck}
-            label="BITE Market"
+            label="Ciphermarket"
             sublabel="Encrypt & Route"
             active={activeIdx >= 2 && activeIdx <= 4}
             color="cipher"

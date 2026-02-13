@@ -1,4 +1,4 @@
-# BITE Market — Project Guide
+# Ciphermarket — Project Guide
 
 ## What This Is
 

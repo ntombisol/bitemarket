@@ -1,8 +1,8 @@
 {
-  "name": "bite-market",
+  "name": "ciphermarket",
   "version": "0.1.0",
   "private": true,
-  "description": "Encrypted data marketplace for AI agents — BITE threshold encryption + x402 micropayments",
+  "description": "Encrypted Data Marketplace — BITE threshold encryption + x402 micropayments",
   "workspaces": [
     "packages/*"
   ],

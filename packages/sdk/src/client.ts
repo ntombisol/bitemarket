@@ -3,18 +3,18 @@ import { ExactEvmScheme } from "@x402/evm";
 import { privateKeyToAccount } from "viem/accounts";
 import { biteEncrypt } from "./crypto.js";
 import type {
-  BiteMarketClientOptions,
+  CiphermarketClientOptions,
   SellerInfo,
   QueryResult,
   DataResult,
 } from "./types.js";
 
-export class BiteMarketClient {
+export class CiphermarketClient {
   private fetchWithPayment: typeof fetch;
   private baseUrl: string;
   private address: string;
 
-  constructor(options: BiteMarketClientOptions) {
+  constructor(options: CiphermarketClientOptions) {
     this.baseUrl = options.baseUrl.replace(/\/$/, "");
 
     // Set up x402 payment-enabled fetch
@@ -50,7 +50,7 @@ export class BiteMarketClient {
   /**
    * Send an encrypted query to a seller and pay for the response.
    *
-   * This performs the full BITE Market flow:
+   * This performs the full Ciphermarket flow:
    * 1. BITE-encrypt the query
    * 2. POST encrypted query to the marketplace
    * 3. GET the response (x402 automatically handles payment)

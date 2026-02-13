@@ -1,5 +1,5 @@
 /**
- * BITE Market Demo Script
+ * Ciphermarket Demo Script
  *
  * Runs the full encrypted data marketplace flow:
  * 1. Lists available sellers
@@ -50,8 +50,8 @@ async function sleep(ms: number) {
 
 async function main() {
   console.log(`\n${c.bold}${c.cyan}  ╔══════════════════════════════════════╗${c.reset}`);
-  console.log(`${c.bold}${c.cyan}  ║     BITE Market — Demo Flow          ║${c.reset}`);
-  console.log(`${c.bold}${c.cyan}  ║  Encrypted Data for AI Agents        ║${c.reset}`);
+  console.log(`${c.bold}${c.cyan}  ║     Ciphermarket — Demo Flow         ║${c.reset}`);
+  console.log(`${c.bold}${c.cyan}  ║  Encrypted Data Marketplace          ║${c.reset}`);
   console.log(`${c.bold}${c.cyan}  ╚══════════════════════════════════════╝${c.reset}\n`);
 
   const mode = BUYER_KEY ? "x402 Payment Mode" : "Dev Mode (no payments)";

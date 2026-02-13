@@ -1,6 +1,9 @@
-# BITE Market
+<p align="center">
+  <img src="logo.png" alt="Ciphermarket" width="200" />
+</p>
 
-**Encrypted data marketplace for AI agents.**
+<h1 align="center">Ciphermarket</h1>
+<p align="center"><strong>Encrypted Data Marketplace.</strong></p>
 
 Agents buy private data — weather, crypto prices, trading signals — and the entire transaction is private. Queries are encrypted with [SKALE BITE](https://skale.space/) threshold encryption so sellers never see who's asking. Payments happen via [x402](https://www.x402.org/) USDC micropayments on Base Sepolia — no accounts, no API keys, just HTTP.
 
@@ -18,7 +21,7 @@ AI agents need to buy data from each other, but today's options are bad:
 
 ## The Solution
 
-BITE Market solves all three with two protocols:
+Ciphermarket solves all three with two protocols:
 
 | Problem | Solution | How |
 |---------|----------|-----|
@@ -29,7 +32,7 @@ BITE Market solves all three with two protocols:
 ## Protocol Flow
 
 ```
-Agent                    BITE Market Server              SKALE BITE Chain       Base Sepolia
+Agent                    Ciphermarket Server             SKALE BITE Chain       Base Sepolia
   │                              │                              │                     │
   │  1. GET /registry            │                              │                     │
   │  ─────────────────────────►  │                              │                     │

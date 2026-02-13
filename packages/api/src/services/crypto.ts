@@ -227,7 +227,7 @@ export function mockupDecrypt(biteEncrypted: string): string {
  * Test crypto at startup — verifies encryption + decryption works.
  */
 export async function testCryptoRoundTrip(): Promise<boolean> {
-  const testMessage = "Hello BITE Market!";
+  const testMessage = "Hello Ciphermarket!";
   try {
     const encrypted = await biteEncrypt(testMessage);
 

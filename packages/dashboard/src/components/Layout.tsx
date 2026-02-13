@@ -1,4 +1,4 @@
-import { Shield, Wifi, WifiOff, BookOpen } from "lucide-react";
+import { Wifi, WifiOff, BookOpen } from "lucide-react";
 import type { ReactNode } from "react";
 import { WalletButton } from "./WalletButton";
 import { FaucetButton } from "./FaucetButton";
@@ -17,19 +17,13 @@ export function Layout({ children, isConnected, onShowDocs, showingDocs }: Layou
       <header className="relative border-b border-slate-light/30 bg-abyss/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-[1600px] mx-auto px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="relative">
-              <Shield className="w-7 h-7 text-decrypt" strokeWidth={1.5} />
-              <div className="absolute inset-0 animate-ping opacity-20">
-                <Shield className="w-7 h-7 text-decrypt" strokeWidth={1.5} />
-              </div>
-            </div>
+            <img src="/logo.png" alt="Ciphermarket" className="w-14 h-14 rounded" />
             <div>
               <h1 className="font-[family-name:var(--font-display)] text-lg font-semibold tracking-tight">
-                <span className="text-decrypt">BITE</span>{" "}
-                <span className="text-slate-300">Market</span>
+                <span className="text-decrypt">Cipher</span><span className="text-slate-300">market</span>
               </h1>
               <p className="text-[10px] uppercase tracking-[0.2em] text-muted font-[family-name:var(--font-mono)]">
-                Encrypted Data Marketplace for AI Agents
+                Encrypted Data Marketplace
               </p>
             </div>
           </div>

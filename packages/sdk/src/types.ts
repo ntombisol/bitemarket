@@ -25,7 +25,7 @@ export interface DataResult {
   };
 }
 
-export interface BiteMarketClientOptions {
+export interface CiphermarketClientOptions {
   /** Private key for x402 payments (hex with 0x prefix) */
   privateKey: `0x${string}`;
   /** API server base URL */

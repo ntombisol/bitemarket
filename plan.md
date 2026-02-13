@@ -1,4 +1,4 @@
-# BITE Market — Task Plan
+# Ciphermarket — Task Plan
 
 ## DAY 1: End-to-End Flow (Feb 11)
 
@@ -36,7 +36,7 @@
 - [x] 1.23 **TEST**: Server starts, registry returns 3 sellers
 
 ### Phase 6: Buyer SDK ✅
-- [x] 1.24-1.27 SDK with BiteMarketClient, crypto, types, exports
+- [x] 1.24-1.27 SDK with CiphermarketClient, crypto, types, exports
 
 ### Phase 7: Demo + Verification ✅
 - [x] 1.28 demo/run-demo.ts — working with colored output

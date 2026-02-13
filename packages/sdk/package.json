@@ -1,5 +1,5 @@
 {
-  "name": "@bite-market/sdk",
+  "name": "@ciphermarket/sdk",
   "version": "0.1.0",
   "private": true,
   "type": "module",

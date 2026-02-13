@@ -1,7 +1,7 @@
-export { BiteMarketClient } from "./client.js";
+export { CiphermarketClient } from "./client.js";
 export { biteEncrypt } from "./crypto.js";
 export type {
-  BiteMarketClientOptions,
+  CiphermarketClientOptions,
   SellerInfo,
   QueryResult,
   DataResult,

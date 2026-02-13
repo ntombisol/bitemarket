@@ -18,7 +18,7 @@ export function useEventStream() {
   const [events, setEvents] = useState<FlowEvent[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const sourceRef = useRef<EventSource | null>(null);
-  const reconnectTimer = useRef<ReturnType<typeof setTimeout>>();
+  const reconnectTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const connect = useCallback(() => {
     if (sourceRef.current) {

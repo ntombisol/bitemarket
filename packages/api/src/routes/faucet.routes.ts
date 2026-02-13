@@ -120,7 +120,7 @@ faucetRouter.post("/", async (req, res) => {
         to: address as `0x${string}`,
         value: ETH_DRIP,
       });
-      await publicClient.waitForTransactionReceipt({ hash: ethTxHash });
+      await publicClient.waitForTransactionReceipt({ hash: ethTxHash as `0x${string}` });
       ethAmount = "0.0001";
     } catch {
       console.warn("Faucet: ETH drip skipped (wallet may be low on ETH)");

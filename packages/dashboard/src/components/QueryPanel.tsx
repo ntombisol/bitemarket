@@ -450,7 +450,7 @@ export function QueryPanel({ sellers, selectedSellerId, onSelectSeller }: QueryP
               </div>
 
               {/* Decrypted view */}
-              {result.decryptedData && (
+              {result.decryptedData ? (
                 <div
                   className="rounded border p-3"
                   style={{
@@ -468,7 +468,7 @@ export function QueryPanel({ sellers, selectedSellerId, onSelectSeller }: QueryP
                     {JSON.stringify(result.decryptedData, null, 2)}
                   </pre>
                 </div>
-              )}
+              ) : null}
 
               {/* On-chain transactions */}
               {result.transactions && (

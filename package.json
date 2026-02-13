@@ -10,7 +10,8 @@
     "dev": "npm run dev --workspace=packages/api",
     "dashboard": "npm run dev --workspace=packages/dashboard",
     "demo": "npx tsx demo/run-demo.ts",
-    "build": "npm run build --workspaces"
+    "build": "npm run build --workspaces",
+    "start": "node packages/api/dist/index.js"
   },
   "engines": {
     "node": ">=20.0.0"

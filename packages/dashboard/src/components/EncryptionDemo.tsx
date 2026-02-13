@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Lock, Unlock, Eye, EyeOff } from "lucide-react";
+import { Lock, Eye, EyeOff } from "lucide-react";
 import type { FlowEvent } from "../hooks/useEventStream";
 
 interface EncryptionDemoProps {

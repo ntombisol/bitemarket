@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { config } from "./config.js";
 import { registry } from "./services/registry.js";
 import { testCryptoRoundTrip, isRealBite } from "./services/crypto.js";
@@ -72,6 +74,15 @@ export async function createApp() {
         biteSandbox: config.BITE_EXPLORER,
       },
     });
+  });
+
+  // Serve dashboard static files in production
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  const dashboardDist = path.resolve(__dirname, "../../dashboard/dist");
+  app.use(express.static(dashboardDist));
+  // SPA fallback — serve index.html for any non-API route
+  app.get("*", (_req, res) => {
+    res.sendFile(path.join(dashboardDist, "index.html"));
   });
 
   return app;
